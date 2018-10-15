@@ -5,42 +5,42 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
+        final Character[] TRANSITION_SYMBOLS = {'a', 'b'};
+        final Character[] LAMBDA_TRANSITION_SYMBOLS = {'a', 'b', '0'};
+        boolean isLambdaNFA = false;
+        Character[] transitionSymbols = TRANSITION_SYMBOLS;
         System.out.println("Number of states: ");
         Scanner sc = new Scanner(System.in);
         int numberOfStates = Integer.parseInt(sc.nextLine());
-        System.out.println("Number of transitions (including lambda, if applicable): ");
-        int numberOfTransitions = Integer.parseInt(sc.nextLine());
-        System.out.println("You have an NFA with " + numberOfStates + " states and " + numberOfTransitions + " transitions.");
 
         Character[] states = aliasStates(numberOfStates);
-        Character[] transitions = aliasTransitions(numberOfTransitions);
         System.out.println("Your states are: ");
         printChars(states);
-        System.out.println();
+        System.out.println("Does your NFA have lambda? (y/n)");
+        if (sc.nextLine().charAt(0) == 'y') {
+            transitionSymbols = LAMBDA_TRANSITION_SYMBOLS;
+            isLambdaNFA = true;
+        }
+        ;
         System.out.println("Your transitions are: ");
-        printChars(transitions);
+        printChars(transitionSymbols);
 
-        System.out.println(generateNFAStateTransitions(states[0],transitions));
+        ArrayList<NFAState> nfaStates = generateAllNFAStateTransitions(states, transitionSymbols);
 
+        for (NFAState nfaState : nfaStates) {
+            System.out.println(nfaState);
+        }
+
+        nfaToDfa(nfaStates);
 
     }
 
     public static Character[] aliasStates(int numberOfStates) {
         Character[] states = new Character[numberOfStates];
         for (int i = 0; i < numberOfStates; i++) {
-            states[i] = (char)('0' + i);
+            states[i] = (char) ('0' + i);
         }
         return states;
-    }
-
-    public static Character[] aliasTransitions(int numberOfTransitions) {
-        Scanner sc = new Scanner(System.in);
-        Character[] transitions = new Character[numberOfTransitions];
-        System.out.println("What are your possible transitions (as single characters)? '0' for lambda.");
-        for (int i = 0; i < numberOfTransitions; i++) {
-            transitions[i] = sc.nextLine().charAt(0);
-        }
-        return transitions;
     }
 
     public static void printChars(Character[] chars) {
@@ -57,52 +57,39 @@ public class Main {
         System.out.println();
     }
 
-//    public static NFAState generateNFAStateTransitions(Character state, Character[] transitions) {
-//        Scanner sc = new Scanner(System.in);
-//        ArrayList<Character> possibleStates = new ArrayList<>();
-//        Map<Character, ArrayList<Character>> transitionStates = new HashMap<>();
-//        for (Character transition : transitions) {
-//            System.out.println("NFAState " + state + " with transition symbol " + transition + " -> (enter 'n' if no transition): " );
-//            Character possibleState = sc.nextLine().charAt(0);
-//            if(!possibleState.equals('n')) {
-//                possibleStates.add(possibleState);
-//            }
-//        }
-//        Collections.sort(possibleStates);
-//        transitionStates.put(state, possibleStates);
-//        return new NFAState(state, transitionStates);
-//    }
-
-    public static NFAState generateAllNFAStateTransitions(Character[] states, Character[] transitions) {
+    //take all states and transition symbols, and have user input state by state what transitions results from a transition symbol
+    //returns an array list of NFAState objects that hold the state and the possible transitions.
+    public static ArrayList<NFAState> generateAllNFAStateTransitions(Character[] states, Character[] transitions) {
         Scanner sc = new Scanner(System.in);
-        Map<Character, ArrayList<Character>> transitionStates = new HashMap<>();
+        ArrayList<NFAState> nfaStates = new ArrayList<>();
         for (Character state : states) {
-            ArrayList<Character> possibleStates = new ArrayList<>();
+            Map<Character, ArrayList<Character>> transitionStates = new HashMap<>();
+            System.out.println("What are the possible transitions for state " + state + " based on the following symbols?");
+            System.out.println("(If state transitions to multiple states, enter them seperated by commas (,).");
+            System.out.println("Enter 'n' if no transition");
+            //user will be asked, symbol by symbol, what the transitions from state to state are.
             for (Character transition : transitions) {
-                System.out.println("NFAState " + state + " with transition symbol " + transition + " -> (enter 'n' if no transition): " );
-                Character possibleState = sc.nextLine().charAt(0);
-                if(!possibleState.equals('n')) {
-                    possibleStates.add(possibleState);
+                ArrayList<Character> nfaTransitions = new ArrayList<>();
+                System.out.print(transition + " -> ");
+                String[] possibleTransitions = sc.nextLine().split(",");
+                for (String possibleTransition : possibleTransitions) {
+                    possibleTransition = possibleTransition.trim();
+                    if (possibleTransition.charAt(0) != 'n') {
+                        nfaTransitions.add(possibleTransition.charAt(0));
+                    }
                 }
+                transitionStates.put(transition, nfaTransitions);
             }
-            Collections.sort(possibleStates);
-            transitionStates.put()
+            nfaStates.add(new NFAState(state, transitionStates));
         }
+        return nfaStates;
     }
 
-//    public static NFAState generateNFAStateTransitions(String state, Character[] transitions) {
-//        Scanner sc = new Scanner(System.in);
-//        Map<Character, String> stateTransitions = new HashMap<>();
-//        ArrayList<String> transitionStates = new ArrayList<>();
-//        for (char transition : transitions) {
-//            System.out.println("NFAState " + state + " with transition " + transition + " goes to state (enter '0' for no state): ");
-//            String transitionState = sc.nextLine();
-//            if(!transitionState.equals("0")) {
-//                transitionStates.add(transitionState);
-//            }
-//        }
-//
-//        return new NFAState(state, stateTransitions);
-//    }
-
+    public static void nfaToDfa(ArrayList<NFAState> nfaStates) {
+        for (NFAState nfaState : nfaStates) {
+            Collection<ArrayList<Character>> nfaStateTransitions = nfaState.getTransitions().values();
+            System.out.println(nfaStateTransitions);
+            nfaStateTransitions.forEach((ArrayList<Character> transitions) -> System.out.println(transitions.toArray(new Character[transitions.size()])));
+        }
+    }
 }

@@ -28,6 +28,7 @@ public class NFAState {
         this.transitions = transitions;
     }
 
+
     @Override
     public String toString() {
         return "NFAState{" +
