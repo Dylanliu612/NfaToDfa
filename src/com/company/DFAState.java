@@ -1,14 +1,17 @@
 package com.company;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class DFAState {
     private String state;
-    private Map<Character, String> transitions;
+    private String transitionA;
+    private String transitionB;
 
-    public DFAState(String state, Map<Character, String> transitions) {
+    public DFAState(String state, String transitionA, String transitionB) {
         this.state = state;
-        this.transitions = transitions;
+        this.transitionA = transitionA;
+        this.transitionB = transitionB;
     }
 
     public String getState() {
@@ -19,19 +22,28 @@ public class DFAState {
         this.state = state;
     }
 
-    public Map<Character, String> getTransitions() {
-        return transitions;
+    public String getTransitionA() {
+        return transitionA;
     }
 
-    public void setTransitions(Map<Character, String> transitions) {
-        this.transitions = transitions;
+    public void setTransitionA(String transitionA) {
+        this.transitionA = transitionA;
+    }
+
+    public String getTransitionB() {
+        return transitionB;
+    }
+
+    public void setTransitionB(String transitionB) {
+        this.transitionB = transitionB;
     }
 
     @Override
     public String toString() {
         return "DFAState{" +
                 "state='" + state + '\'' +
-                ", transitions=" + transitions +
+                ", transitionA='" + transitionA + '\'' +
+                ", transitionB='" + transitionB + '\'' +
                 '}';
     }
 }
