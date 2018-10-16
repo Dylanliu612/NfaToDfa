@@ -87,9 +87,20 @@ public class Main {
 
     public static void nfaToDfa(ArrayList<NFAState> nfaStates) {
         for (NFAState nfaState : nfaStates) {
+            ArrayList<String> dfaStates = new ArrayList<>();
             Collection<ArrayList<Character>> nfaStateTransitions = nfaState.getTransitions().values();
-            System.out.println(nfaStateTransitions);
-            nfaStateTransitions.forEach((ArrayList<Character> transitions) -> System.out.println(transitions.toArray(new Character[transitions.size()])));
+            for (ArrayList<Character> transitionSet : nfaStateTransitions) {
+
+                if (transitionSet.size() > 1) {
+                    System.out.println("nfa specific state detected : " + nfaState);
+                }
+//                StringBuilder dfaState = new StringBuilder();
+//                for (Character transitionState : transitionSet) {
+//                    dfaState.append(transitionState);
+//                }
+//                dfaStates.add(dfaState.toString());
+//                System.out.println(dfaState);
+            }
         }
     }
 }
