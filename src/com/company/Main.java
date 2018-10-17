@@ -7,8 +7,6 @@ public class Main {
     public static void main(String[] args) {
         final Character[] TRANSITION_SYMBOLS = {'a', 'b'};
         final Character[] LAMBDA_TRANSITION_SYMBOLS = {'a', 'b', '0'};
-        boolean isLambdaNFA = false;
-        Character[] transitionSymbols = TRANSITION_SYMBOLS;
 
         ArrayList<NFAState> testStates1 = new ArrayList<>();
         ArrayList<NFAState> testStates2 = new ArrayList<>();
@@ -42,10 +40,10 @@ public class Main {
         transitionStates.add('0');
         transitionStates.add('1');
         transitions.put(TRANSITION_SYMBOLS[0], transitionStates);
-        testStates2.add(new NFAState('0', transitions));
+//        testStates2.add(new NFAState('0', transitions));
 
         transitionStates = new ArrayList<>();
-        transitions = new HashMap<>();
+//        transitions = new HashMap<>();
         transitionStates.add('1');
         transitions.put(TRANSITION_SYMBOLS[1], transitionStates);
         testStates2.add(new NFAState('0', transitions));
@@ -54,10 +52,10 @@ public class Main {
         transitions = new HashMap<>();
         transitionStates.add('2');
         transitions.put(TRANSITION_SYMBOLS[0], transitionStates);
-        testStates2.add(new NFAState('1', transitions));
+//        testStates2.add(new NFAState('1', transitions));
 
         transitionStates = new ArrayList<>();
-        transitions = new HashMap<>();
+//        transitions = new HashMap<>();
         transitionStates.add('2');
         transitions.put(TRANSITION_SYMBOLS[1], transitionStates);
         testStates2.add(new NFAState('1', transitions));
@@ -68,29 +66,57 @@ public class Main {
         transitions.put(TRANSITION_SYMBOLS[1], transitionStates);
         testStates2.add(new NFAState('2', transitions));
 
-//        System.out.println("Number of states: ");
-//        Scanner sc = new Scanner(System.in);
-//        int numberOfStates = Integer.parseInt(sc.nextLine());
-//
-//        Character[] states = aliasStates(numberOfStates);
-//        System.out.println("Your states are: ");
-//        printChars(states);
-//        System.out.println("Does your NFA have lambda? (y/n)");
-//        if (sc.nextLine().charAt(0) == 'y') {
-//            transitionSymbols = LAMBDA_TRANSITION_SYMBOLS;
-//            isLambdaNFA = true;
-//        }
-//        System.out.println("Your transitions are: ");
-//        printChars(transitionSymbols);
-//
-//        ArrayList<NFAState> nfaStates = generateAllNFAStateTransitions(states, transitionSymbols);
-//
-//        for (NFAState nfaState : nfaStates) {
-//            System.out.println(nfaState);
-//        }
+        ArrayList<Character> transitionAs = new ArrayList<>();
+        ArrayList<Character> transitionBs = new ArrayList<>();
+        transitionAs.add('0');
+        transitionAs.add('1');
+        testStates3.add(new NFAState('0', transitionAs, transitionBs));
 
-//        nfaToDfa(testStates1);
-        ArrayList<DFAState> dfaStates = nfaToDfa(testStates2);
+        transitionAs = new ArrayList<>();
+        transitionBs = new ArrayList<>();
+        transitionBs.add('1');
+        transitionBs.add('2');
+        testStates3.add(new NFAState('1', transitionAs, transitionBs));
+
+        transitionAs = new ArrayList<>();
+        transitionBs = new ArrayList<>();
+        transitionAs.add('2');
+        testStates3.add(new NFAState('2', transitionAs, transitionBs));
+
+        transitionAs = new ArrayList<>();
+        transitionBs = new ArrayList<>();
+        transitionAs.add('0');
+        transitionAs.add('1');
+        transitionBs.add('1');
+        testStates4.add(new NFAState('0', transitionAs, transitionBs));
+
+        transitionAs = new ArrayList<>();
+        transitionBs = new ArrayList<>();
+        transitionAs.add('2');
+        transitionBs.add('2');
+        testStates4.add(new NFAState('1', transitionAs, transitionBs));
+
+        transitionAs = new ArrayList<>();
+        transitionBs = new ArrayList<>();
+        transitionBs.add('2');
+        testStates4.add(new NFAState('2', transitionAs, transitionBs));
+
+
+
+
+
+        for (NFAState nfaState : testStates3) {
+            System.out.println(nfaState);
+        }
+        System.out.println();
+        for (NFAState nfaState : testStates4) {
+            System.out.println(nfaState);
+        }
+//        ArrayList<DFAState> dfaStates = nfaToDfa(testStates1);
+//
+//        for (DFAState dfaState : dfaStates) {
+//            System.out.println(dfaState);
+//        }
 
 
     }
@@ -147,7 +173,8 @@ public class Main {
 
     public static ArrayList<DFAState> nfaToDfa(ArrayList<NFAState> nfaStates) {
         ArrayList<DFAState> dfaStates = new ArrayList<>();
-        //for each state, we will make a
+        boolean hasTrapState = false;
+
         for (NFAState nfaState : nfaStates) {
             String transitionA = "";
             String transitionB = "";
@@ -157,19 +184,78 @@ public class Main {
                 for (int i = 0; i < entry.getValue().size(); i++) {
                     newState.append(entry.getValue().get(i));
                 }
-                if(entry.getKey() == 'a') {
-                    transitionA = newState.toString();
+                if (newState.length() > 1) {
+
                 }
-                if(entry.getKey() == 'b') {
-                    transitionB = newState.toString();
+                if (entry.getKey() == 'a') {
+                    char [] temp = newState.toString().toCharArray();
+                    Arrays.sort(temp);
+                    transitionA = new String(temp);
                 }
-                System.out.println("state : " + nfaState.getState());
+                if (entry.getKey() == 'b') {
+                    char [] temp = newState.toString().toCharArray();
+                    Arrays.sort(temp);
+                    transitionB = new String(temp);
+                }
+            }
+            String trapState = Integer.toString(nfaStates.size());
+            if (transitionA.isEmpty() || transitionB.isEmpty() && !hasTrapState) {
+                DFAState dfaState = new DFAState(trapState, trapState, trapState);
+                dfaStates.add(dfaState);
+                hasTrapState = true;
+            }
+            if (transitionA.isEmpty()) {
+                transitionA = trapState;
+            }
+            if (transitionB.isEmpty()) {
+                transitionB = trapState;
             }
             DFAState dfaState = new DFAState(nfaState.getState().toString(), transitionA, transitionB);
-//            System.out.println(dfaState);
             dfaStates.add(dfaState);
 
         }
+        ArrayList<DFAState> newDFAStates = new ArrayList<>();
+        for (DFAState dfaState : dfaStates) {
+            if(dfaState.getState().equals("trap")) {
+                continue;
+            }
+
+            if (dfaState.getTransitionA().length() > 1) {
+                String newDFAState = dfaState.getTransitionA();
+                StringBuilder transitionA = new StringBuilder();
+                StringBuilder transitionB = new StringBuilder();
+                for (DFAState state : dfaStates) {
+                    for (int i = 0; i < newDFAState.length(); i++) {
+                        StringBuilder temp = new StringBuilder();
+                        temp.append(newDFAState.charAt(i));
+                        if(state.getState().equals(temp.toString()) ) {
+                            transitionA.append(state.getTransitionA());
+                            transitionB.append(state.getTransitionB());
+                        }
+                    }
+                }
+                newDFAStates.add(new DFAState(newDFAState, transitionA.toString(), transitionB.toString()));
+            }
+
+            if (dfaState.getTransitionB().length() > 1) {
+                String newDFAState = dfaState.getTransitionB();
+                StringBuilder transitionA = new StringBuilder();
+                StringBuilder transitionB = new StringBuilder();
+                for (DFAState state : dfaStates) {
+                    for (int i = 0; i < newDFAState.length(); i++) {
+                        StringBuilder temp = new StringBuilder();
+                        temp.append(newDFAState.charAt(i));
+                        if(state.getState().equals(temp.toString()) ) {
+                            transitionA.append(state.getTransitionA());
+                            transitionB.append(state.getTransitionB());
+                        }
+                    }
+                }
+                newDFAStates.add(new DFAState(newDFAState, transitionA.toString(), transitionB.toString()));
+            }
+        }
+        dfaStates.addAll(newDFAStates);
+
         return dfaStates;
     }
 }
