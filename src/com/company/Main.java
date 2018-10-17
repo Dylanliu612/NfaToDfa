@@ -56,9 +56,23 @@ public class Main {
         System.out.println();
 
 
-        ArrayList<DFAState> dfaStates = nfaToDfa(testStates1);
+        ArrayList<DFAState> dfaStates1 = nfaToDfa(testStates1);
 
-        for (DFAState dfaState : dfaStates) {
+        for (DFAState dfaState : dfaStates1) {
+            System.out.println(dfaState);
+        }
+
+        System.out.println();
+
+        for (NFAState nfaState : testStates1) {
+            System.out.println(nfaState);
+        }
+        System.out.println();
+
+
+        ArrayList<DFAState> dfaStates2 = nfaToDfa(testStates2);
+
+        for (DFAState dfaState : dfaStates2) {
             System.out.println(dfaState);
         }
 
